@@ -118,29 +118,17 @@ void prompt()
     char *trimmed = trimwhitespace(buf);
     int left = strlen(trimmed);
 
-    char *args[left];
-
     // If there are no spaces, the command
     // is the same as the trimmed command.
     char *cmdStr = trimmed;
-    args[0] = trimmed;
-    int wordsFound = 1;
+    int cmdLen = left;
     for (int i = 0; i < left; i++)
     {
         if (trimmed[i] == ' ')
         {
             trimmed[i] = 0;
-            args[wordsFound] = &trimmed[i+1];
-            wordsFound++;
-        }
-    }
-    int cmdLen = strlen(args[0]);
-
-    if (DEBUG)
-    {
-        for (int i = 0; i < wordsFound; i++)
-        {
-            printf("\t----%d:%s\n",i,args[i]);
+            cmdLen = i;
+            break;
         }
     }
 
