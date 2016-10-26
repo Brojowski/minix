@@ -29,6 +29,6 @@ struct command_node
 };
 
 struct command_node *commands;
-bool stop = false;
+bool stop;
 
 #endif

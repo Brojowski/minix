@@ -6,8 +6,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include "command.h"
 #include "main.h"
+#include "showzone.h"
+#include "command.h"
 
 /*
  * How to add additional commands:
@@ -102,7 +103,7 @@ char *trimwhitespace(char *str)
  * Purpose:
  *  1. Read user input.
  *  2. Parse command.
- *  3. TODO: Parse args.
+ *  3. Parse args.
  *  4. Find and run command.
  */
 void prompt()
@@ -237,6 +238,8 @@ int main()
     createCommand("quit", &quit);
     createCommand("help", &help);
     createCommand("minimount", &mount);
+    createCommand("showzone", &showzone);
+
     do
     {
         prompt();
