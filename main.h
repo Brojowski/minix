@@ -1,7 +1,7 @@
 #ifndef MAIN_HEAD
 #define MAIN_HEAD
 
-#define DEBUG true
+#define DEBUG false
 
 #define BLOCK_SIZE 1024
 

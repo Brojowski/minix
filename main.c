@@ -161,12 +161,12 @@ void prompt()
          */
         if (cmd->cmdLen == cmdLen && !strcmp(cmd->name, cmdStr))
         {
+            cmd->run(wordsFound, args);		
+            found = true;
+            break;
             if (DEBUG)
             {
                 printf("\t----RUN COMMAND\n");
-                cmd->run(wordsFound, args);		
-                found = true;
-                break;
             }
 	    }
     }
@@ -201,6 +201,7 @@ void mount(int numArgs,char *args[])
     }
     else
     {
+        printf("useage: minimount <filename>\n");
         return;
     }
 
@@ -208,7 +209,7 @@ void mount(int numArgs,char *args[])
 	
 	if(fd == -1)
     {
-		printf("Invalid Input, file wasn't mounted\n");
+		printf("Invalid input. Image not mounted.\nProper useage: minimount <filename>\n");
 	}
 	else{		
         // Isnt this block just a cast?
@@ -235,7 +236,7 @@ int main()
 {
     createCommand("quit", &quit);
     createCommand("help", &help);
-    createCommand("mount", &mount);
+    createCommand("minimount", &mount);
     do
     {
         prompt();
