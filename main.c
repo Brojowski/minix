@@ -3,8 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <fcntl.h>
 
-
+#include "command.h"
 #include "main.h"
 
 /*
@@ -184,7 +185,36 @@ void prompt()
         buf[i] = 0;
     }
 }
+// mount selected file, throw error if file is invalid.
+// map superblock attributes to variables in the super_block struct.
+// 
 
+void mount(char *imagefile){
+	int fd;
+	if((fd = open(imagefile, O_RDONLY)) <= 0){
+		printf("\nInvalid Input, file wasn't mounted");
+	}
+	else{
+		struct super_block super;	
+			
+		fd = open(imagefile, O_RDONLY);
+		lseek(fd, BLOCK_SIZE, SEEK_SET);
+		read(fd, &super.number_of_inodes, 2);
+		read(fd, &super.number_of_blocks, 2);
+		read(fd, &super.number_of_imap_blocks, 2);
+		read(fd, &super.number_of_zmap_blocks, 2);
+		read(fd, &super.first_zone_data, 2);		
+		read(fd, &super.log_zone_size, 2);
+		// max size does not seem to be correct.
+		// not sure why, as this should be the area to read it from.		
+		read(fd, &super.max_size, 2);
+		// not sure why magic number is 2 bytes further up
+		// than it should be, it just is. 
+		lseek(fd, 2, SEEK_CUR);
+		read(fd, &super.magic, 2);
+	//TODO state, zones. Will work on figuring this out
+	}
+}
 int main()
 {
     createCommand("quit", &quit);
