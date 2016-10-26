@@ -20,9 +20,11 @@ struct minix_super_block {
 
 struct minix_super_block super; 
 
-void mount(int numArgs,char *args[]);
+void minimount(int numArgs,char *args[]);
+void miniumount(int numArgs,char *args[]);
 void showsuper();
 
+int isMounted = 0;
 int fd;
 
 #endif
