@@ -18,6 +18,6 @@ unsigned short state;
 unsigned short zones;
 
 
-void mount(char *imagefile);
+void mount(int numArgs,char *args[]);
 
 #endif

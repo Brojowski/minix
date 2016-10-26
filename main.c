@@ -98,11 +98,6 @@ char *trimwhitespace(char *str)
     return str;
 }
 
-void printArgs(char *args[])
-{
-    
-}
-
 /**
  * Purpose:
  *  1. Read user input.
@@ -169,21 +164,11 @@ void prompt()
             if (DEBUG)
             {
                 printf("\t----RUN COMMAND\n");
+                cmd->run(wordsFound, args);		
+                found = true;
+                break;
             }
-            // if there is an argument after command,
-	    // pass to method
-	    
-	    if(wordsFound >1)
-	    {
-	        cmd->run(args[1]);
-                found = true;	        
-	    }	
-	    else
-            {		
-	        cmd->run();
-                found = true;			
-	    }		
-	}
+	    }
     }
 
     if (!found)
@@ -206,7 +191,19 @@ void prompt()
 // but sometimes this method will work and sometimew it
 // won't using the same input
 
-void mount(char *imagefile){
+void mount(int numArgs,char *args[])
+{
+    char *imagefile;
+    // This matches the others commands now
+    if (numArgs > 1)
+    {
+        imagefile = args[1];
+    }
+    else
+    {
+        return;
+    }
+
 	int fd = open(imagefile, O_RDONLY);
 	
 	if(fd == -1){
@@ -214,6 +211,7 @@ void mount(char *imagefile){
 
 	}
 	else{		
+        // Isnt this block just a cast?
 		lseek(fd, 1024, SEEK_SET);
 		read(fd, &number_of_inodes, 2);
 		read(fd, &number_of_blocks, 2);

@@ -16,7 +16,7 @@
 #define true 1
 
 // Save functions for commands.
-typedef void (*commandFunction)();
+typedef void (*commandFunction)(int numArgs, char *args[]);
 
 struct command_node
 {
