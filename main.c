@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 #include "command.h"
 #include "main.h"
@@ -135,6 +136,9 @@ void prompt()
             wordsFound++;
         }
     }
+    //sometimes this number is wrong according to debug.
+    //not sure how yet but believe this is the source
+    //of your flag problem. (at least one possible source)	
     int cmdLen = strlen(args[0]);
 
     if (DEBUG)
@@ -149,7 +153,7 @@ void prompt()
     for (struct command_node *cmd = commands; !found && cmd; cmd = cmd->next)
     {
         if (DEBUG)
-        {
+        {	
             printf("\t----%d=%d\n", cmd->cmdLen, cmdLen);
             printf("\t----'%s'='%s'\n", cmd->name, cmdStr);
         }
@@ -166,9 +170,20 @@ void prompt()
             {
                 printf("\t----RUN COMMAND\n");
             }
-            cmd->run();
-            found = true;
-        }
+            // if there is an argument after command,
+	    // pass to method
+	    
+	    if(wordsFound >1)
+	    {
+	        cmd->run(args[1]);
+                found = true;	        
+	    }	
+	    else
+            {		
+	        cmd->run();
+                found = true;			
+	    }		
+	}
     }
 
     if (!found)
@@ -186,40 +201,41 @@ void prompt()
     }
 }
 // mount selected file, throw error if file is invalid.
-// map superblock attributes to variables in the super_block struct.
-// 
+// map superblock attributes to variables in 'command.h'
+// this probably has to do with error in the console
+// but sometimes this method will work and sometimew it
+// won't using the same input
 
 void mount(char *imagefile){
-	int fd;
-	if((fd = open(imagefile, O_RDONLY)) <= 0){
+	int fd = open(imagefile, O_RDONLY);
+	
+	if(fd == -1){
 		printf("\nInvalid Input, file wasn't mounted");
+
 	}
-	else{
-		struct super_block super;	
-			
-		fd = open(imagefile, O_RDONLY);
-		lseek(fd, BLOCK_SIZE, SEEK_SET);
-		read(fd, &super.number_of_inodes, 2);
-		read(fd, &super.number_of_blocks, 2);
-		read(fd, &super.number_of_imap_blocks, 2);
-		read(fd, &super.number_of_zmap_blocks, 2);
-		read(fd, &super.first_zone_data, 2);		
-		read(fd, &super.log_zone_size, 2);
+	else{		
+		lseek(fd, 1024, SEEK_SET);
+		read(fd, &number_of_inodes, 2);
+		read(fd, &number_of_blocks, 2);
+		read(fd, &number_of_imap_blocks, 2);
+		read(fd, &number_of_zmap_blocks, 2);
+		read(fd, &first_zone_data, 2);		
+		read(fd, &log_zone_size, 2);
 		// max size does not seem to be correct.
 		// not sure why, as this should be the area to read it from.		
-		read(fd, &super.max_size, 2);
+		read(fd, &max_size, 2);
 		// not sure why magic number is 2 bytes further up
 		// than it should be, it just is. 
 		lseek(fd, 2, SEEK_CUR);
-		read(fd, &super.magic, 2);
-	//TODO state, zones. Will work on figuring this out
+		read(fd, &magic, 2);
+		//TODO state, zones. Will work on figuring this out
 	}
 }
 int main()
 {
     createCommand("quit", &quit);
     createCommand("help", &help);
-
+    createCommand("mount", &mount);
     do
     {
         prompt();
