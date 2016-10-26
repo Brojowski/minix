@@ -217,11 +217,25 @@ void mount(int numArgs,char *args[]){
 		printf("Mounted: %s\n", imagefile);
 	}
 }
+void showsuper(){
+	
+	printf("\n\tnumber of inodes: %d", super.s_ninodes);
+	printf("\n\tnumber of zones: %d", super.s_nzones);	
+	printf("\n\tnumber of imap_blocks: %d", super.s_imap_blocks); 	      
+        printf("\n\tnumber of zmap_blocks: %d", super.s_zmap_blocks);	
+	printf("\n\tfirst data zone: %d", super.s_firstdatazone); 	
+	printf("\n\tlog zone size: %d", super.s_log_zone_size);		
+	printf("\n\tmax size: %d", super.s_max_size); 		
+	printf("\n\tmagic: %d", super.s_magic); 			
+	printf("\n\tstate: %d", super.s_state); 			
+	printf("\n\tzones: %d\n", super.s_zones);			
+}
 int main()
 {
     createCommand("quit", &quit);
     createCommand("help", &help);
     createCommand("mount", &mount);
+    createCommand("showsuper",&showsuper);
     do
     {
         prompt();
