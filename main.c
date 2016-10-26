@@ -206,9 +206,9 @@ void mount(int numArgs,char *args[])
 
 	int fd = open(imagefile, O_RDONLY);
 	
-	if(fd == -1){
-		printf("\nInvalid Input, file wasn't mounted");
-
+	if(fd == -1)
+    {
+		printf("Invalid Input, file wasn't mounted\n");
 	}
 	else{		
         // Isnt this block just a cast?
@@ -227,6 +227,8 @@ void mount(int numArgs,char *args[])
 		lseek(fd, 2, SEEK_CUR);
 		read(fd, &magic, 2);
 		//TODO state, zones. Will work on figuring this out
+
+        printf("Mounted: %s\n", imagefile);
 	}
 }
 int main()
