@@ -186,14 +186,73 @@ void prompt()
         buf[i] = 0;
     }
 }
+
 // mount selected file, throw error if file is invalid.
 // map superblock attributes to variables in 'command.h'
-// this probably has to do with error in the console
-// but sometimes this method will work and sometimew it
-// won't using the same input
 
-void mount(int numArgs,char *args[]){
+void minimount(int numArgs,char *args[]){
+	
+	char *imagefile;
+	
+	// Check for argument	
+	if (numArgs > 1){
+        	imagefile = args[1];
+    	}
+	
+	else{
+        	return;
+	}
+	
+	// Check for valid file	
+	fd = open(imagefile, O_RDONLY);
+	
+	if(fd == -1){
+		printf("\nInvalid Input, file wasn't mounted\n");
+		return;	
+	}
+	
+	// Check to see if an img file is already mounted
+	if(isMounted == 1){
+		printf("\nA file is already mounted, unmount to mount a different one\n");
+		return;		
+	}
+	
+	lseek(fd, 1024, SEEK_SET);
+	read(fd, &super , 20);
+	isMounted = 1;
+	printf("Mounted: %s\n", imagefile);
+	// this line is part of what I want to fix later
+	// for unmount. leave here and read comment 
+	// in umount.
+	
+	//fd = close(fd);
+}
+void showsuper(){
+	if(isMounted == 0){
+		printf("\nNo file mounted, cannot read superblock\n");
+		return;
+	}
+	printf("\n\tnumber of inodes: %d", super.s_ninodes);
+	printf("\n\tnumber of zones: %d", super.s_nzones);	
+	printf("\n\tnumber of imap_blocks: %d", super.s_imap_blocks); 	      
+        printf("\n\tnumber of zmap_blocks: %d", super.s_zmap_blocks);	
+	printf("\n\tfirst data zone: %d", super.s_firstdatazone); 	
+	printf("\n\tlog zone size: %d", super.s_log_zone_size);		
+	printf("\n\tmax size: %d", super.s_max_size); 		
+	printf("\n\tmagic: %d", super.s_magic); 			
+	printf("\n\tstate: %d", super.s_state); 			
+	printf("\n\tzones: %d\n", super.s_zones);			
+}
+// Unmounts specified image file
 
+void miniumount(int numArgs,char *args[]){
+	
+	// Check to see if file is mounted	
+	if(isMounted == 0){
+		printf("\nNo file to unmount\n");
+		return;	
+	}
+	
 	char *imagefile;
 	
 	if (numArgs > 1){
@@ -203,38 +262,33 @@ void mount(int numArgs,char *args[]){
 	else{
         	return;
 	}
-
-	fd = open(imagefile, O_RDONLY);
+	
+	//Ran into problems here. it seems fd is flagged
+	//for some reason and it wont let you unmount.
+	//without this piece of code it works fine, but
+	//would like to fix later for an extra check	
+	
+	// Check for valid file	
+	/*fd = open(imagefile, O_RDONLY);
 	
 	if(fd == -1){
-		printf("Invalid Input, file wasn't mounted\n");
-	}
+		printf("\nInvalid Input, file wasn't unmounted\n");
+		return;	
+	}*/
 	
-	else{		
-		lseek(fd, 1024, SEEK_SET);
-		read(fd, &super , 20);
-		
-		printf("Mounted: %s\n", imagefile);
-	}
-}
-void showsuper(){
 	
-	printf("\n\tnumber of inodes: %d", super.s_ninodes);
-	printf("\n\tnumber of zones: %d", super.s_nzones);	
-	printf("\n\tnumber of imap_blocks: %d", super.s_imap_blocks); 	      
-    printf("\n\tnumber of zmap_blocks: %d", super.s_zmap_blocks);	
-	printf("\n\tfirst data zone: %d", super.s_firstdatazone); 	
-	printf("\n\tlog zone size: %d", super.s_log_zone_size);		
-	printf("\n\tmax size: %d", super.s_max_size); 		
-	printf("\n\tmagic: %d", super.s_magic); 			
-	printf("\n\tstate: %d", super.s_state); 			
-	printf("\n\tzones: %d\n", super.s_zones);			
+	//clear variables for superblock struct
+	isMounted = 0;	
+	super = (struct minix_super_block){0};
+	printf("\nUnmounted: %s\n", imagefile);
+	close(fd);
 }
 int main()
 {
     createCommand("quit", &quit);
     createCommand("help", &help);
-    createCommand("minimount", &mount);
+    createCommand("minimount", &minimount);
+    createCommand("miniumount", &miniumount);
     createCommand("showzone", &showzone);
     createCommand("showsuper",&showsuper);
 
