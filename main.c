@@ -161,14 +161,15 @@ void prompt()
          */
         if (cmd->cmdLen == cmdLen && !strcmp(cmd->name, cmdStr))
         {
-            cmd->run(wordsFound, args);		
-            found = true;
-            break;
             if (DEBUG)
             {
                 printf("\t----RUN COMMAND\n");
-            }
+                cmd->run(wordsFound, args);		
+                found = true;                
+		break;
+            	
 	    }
+	}
     }
 
     if (!found)
@@ -191,52 +192,36 @@ void prompt()
 // but sometimes this method will work and sometimew it
 // won't using the same input
 
-void mount(int numArgs,char *args[])
-{
-    char *imagefile;
-    // This matches the others commands now
-    if (numArgs > 1)
-    {
-        imagefile = args[1];
-    }
-    else
-    {
-        printf("useage: minimount <filename>\n");
-        return;
-    }
+void mount(int numArgs,char *args[]){
+
+	char *imagefile;
+	
+	if (numArgs > 1){
+        	imagefile = args[1];
+    	}
+	
+	else{
+        	return;
+	}
 
 	int fd = open(imagefile, O_RDONLY);
 	
-	if(fd == -1)
-    {
-		printf("Invalid input. Image not mounted.\nProper useage: minimount <filename>\n");
+	if(fd == -1){
+		printf("Invalid Input, file wasn't mounted\n");
 	}
+	
 	else{		
-        // Isnt this block just a cast?
 		lseek(fd, 1024, SEEK_SET);
-		read(fd, &number_of_inodes, 2);
-		read(fd, &number_of_blocks, 2);
-		read(fd, &number_of_imap_blocks, 2);
-		read(fd, &number_of_zmap_blocks, 2);
-		read(fd, &first_zone_data, 2);		
-		read(fd, &log_zone_size, 2);
-		// max size does not seem to be correct.
-		// not sure why, as this should be the area to read it from.		
-		read(fd, &max_size, 2);
-		// not sure why magic number is 2 bytes further up
-		// than it should be, it just is. 
-		lseek(fd, 2, SEEK_CUR);
-		read(fd, &magic, 2);
-		//TODO state, zones. Will work on figuring this out
-
-        printf("Mounted: %s\n", imagefile);
+		read(fd, &super , 20);
+		
+		printf("Mounted: %s\n", imagefile);
 	}
 }
 int main()
 {
     createCommand("quit", &quit);
     createCommand("help", &help);
-    createCommand("minimount", &mount);
+    createCommand("mount", &mount);
     do
     {
         prompt();
