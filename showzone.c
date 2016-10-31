@@ -18,6 +18,11 @@ void showHead()
 
 void showzone(int numArgs, char *args[])
 {
+    if (!isMounted)
+    {
+        printf("No image mounted.\n");
+        return;
+    }
     if (numArgs <= 1)
     {
         printf("usage: showzone <zone_number>\n");

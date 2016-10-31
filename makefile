@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-I.
-DEPS = main.h showzone.h
+DEPS = main.h showzone.h command.h
 OBJ = main.o  showzone.o
 
 %.o: %.c $(DEPS)

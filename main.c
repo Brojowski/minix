@@ -109,6 +109,15 @@ char *trimwhitespace(char *str)
 void prompt()
 {
     char buf[MAX_INPUT_SIZE];
+    // There seems to be a problem with data being
+    // left in buf if 6+ chars were read. This messes
+    // up the next command. Clearing the buffer seems
+    // to fix this.
+    for (int i = 0; i < MAX_INPUT_SIZE; i++)
+    {
+        buf[i] = 0;
+    }
+    
     write(STD_OUTPUT, PROMPT_SYMBOL, strlen(PROMPT_SYMBOL));
     int rawRead = read(STD_INPUT, buf, MAX_INPUT_SIZE);
 
@@ -175,15 +184,6 @@ void prompt()
     if (!found)
     {
         printf("%s: command not found\n", cmdStr);
-    }
-
-    // There seems to be a problem with data being
-    // left in buf if 6+ chars were read. This messes
-    // up the next command. Clearing the buffer seems
-    // to fix this.
-    for (int i = 0; i < rawRead; i++)
-    {
-        buf[i] = 0;
     }
 }
 
