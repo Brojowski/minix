@@ -298,6 +298,15 @@ int main()
     {
         prompt();
     } while (!stop);
+    
+    // Free memory used by linked list.
+    struct command_node* cmd;
+    while((cmd = commands))
+    {
+        commands = cmd->next;
+        printf("free %s",cmd->name);
+        free(cmd);
+    }
 
     printf("\n");
     return 0;
