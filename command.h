@@ -24,7 +24,7 @@ void minimount(int numArgs,char *args[]);
 void miniumount(int numArgs,char *args[]);
 void showsuper();
 
-int isMounted = 0;
+int isMounted;
 int fd;
 
 #endif
