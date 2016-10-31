@@ -34,6 +34,7 @@ struct minix_dir_entry {
 };
 
 struct minix_super_block super; 
+struct minix_inode inode;
 
 void minimount(int numArgs,char *args[]);
 void miniumount(int numArgs,char *args[]);

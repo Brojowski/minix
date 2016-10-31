@@ -8,7 +8,9 @@
 
 #include "main.h"
 #include "showzone.h"
+
 #include "command.h"
+#include "traverse.h"
 
 /*
  * How to add additional commands:
@@ -291,7 +293,7 @@ int main()
     createCommand("miniumount", &miniumount);
     createCommand("showzone", &showzone);
     createCommand("showsuper",&showsuper);
-
+    createCommand("traverse", &traverse);
     do
     {
         prompt();
