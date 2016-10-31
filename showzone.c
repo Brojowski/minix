@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "showzone.h"
 #include "main.h"
@@ -8,7 +10,7 @@
 
 void showHead()
 {
-    printf("\t");
+    printf("\t    ");
     for (int i = 0; i < 16; i++)
     {
         printf(" %x",i);
@@ -34,15 +36,22 @@ void showzone(int numArgs, char *args[])
 
     showHead();
 
-    for (int i = 0; i < BLOCK_SIZE; i+=8)
+    for (int i = 0; i < BLOCK_SIZE; i+=16)
     {
-        printf("%x",i);
+        printf("%x\t",i);
         // Print content here
         for (int x = 0; x < 16; x++)
         {
             char *c;
             read(fd, c, 1);
-            printf("%c",*c);
+            if (isprint(*c))
+            {
+                printf(" %c",*c);
+            }
+            else
+            {
+                printf("  ");
+            }
         }
 
         printf("\n");
