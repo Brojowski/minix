@@ -30,6 +30,11 @@ void showzone(int numArgs, char *args[])
         printf("usage: showzone <zone_number>\n");
         return;
     }
+    if (DEBUG)
+    {
+        printf("\t----NumArgs: %d\n",numArgs);
+        printf("\t----Number: %s\n",args[1]);
+    }
     int block_num = atoi(args[1]);
     printf("Zone: %d\n", block_num);    
     off_t result = lseek(fd, block_num * BLOCK_SIZE, SEEK_SET);
@@ -42,11 +47,12 @@ void showzone(int numArgs, char *args[])
         // Print content here
         for (int x = 0; x < 16; x++)
         {
-            char *c;
-            read(fd, c, 1);
-            if (isprint(*c))
+            char c;
+            read(fd, &c, 1);
+            
+            if (isprint(c))
             {
-                printf(" %c",*c);
+                printf(" %c",c);
             }
             else
             {
