@@ -10,7 +10,7 @@
 
 void showHead()
 {
-    printf("\t    ");
+    printf("\t");
     for (int i = 0; i < 16; i++)
     {
         printf(" %x",i);
