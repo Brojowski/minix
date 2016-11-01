@@ -1,8 +1,6 @@
 #ifndef MAIN_HEAD
 #define MAIN_HEAD
 
-#define DEBUG true
-
 #define BLOCK_SIZE 1024
 
 #define MAX_INPUT_SIZE 100
@@ -30,5 +28,7 @@ struct command_node
 
 struct command_node *commands;
 bool stop;
+
+bool DEBUG;
 
 #endif

@@ -22,6 +22,11 @@
 
 struct command_node *last;
 
+void toggleDebug()
+{
+    DEBUG = !DEBUG;
+}
+
 /**
  * Purpose:
  *  End user input loop.
@@ -294,6 +299,7 @@ int main()
     createCommand("showzone", &showzone);
     createCommand("showsuper",&showsuper);
     createCommand("traverse", &traverse);
+    createCommand("--debug", &toggleDebug);
     do
     {
         prompt();
@@ -304,7 +310,6 @@ int main()
     while((cmd = commands))
     {
         commands = cmd->next;
-        printf("free %s",cmd->name);
         free(cmd);
     }
 
