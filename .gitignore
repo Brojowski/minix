@@ -1,3 +1,4 @@
 groups
 assign
-minix.pdf
+*.o
+minix
