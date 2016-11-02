@@ -48,17 +48,19 @@ void printAdvDirent(struct minix_dir_entry *dirent)
 	short MASK_middle = 0x0038;
 	short MASK_last   = 0x0007;
 	char otherPerm[10];
+	//char date[10];
 	otherPerm[9] = 0;
 	intToPermission((MASK_first & node.i_mode) >> 6, &otherPerm[0]);
 	intToPermission((MASK_middle & node.i_mode) >> 3, &otherPerm[3]);
 	intToPermission((MASK_last & node.i_mode), &otherPerm[6]);
+	//strftime(date, 20, localtime(&(node.st_mtime)));
 
 
 	printf("%c", (MASK_file & node.i_mode) ? '-' : 'd');
 	printf("%s", (char *)&otherPerm);
 	printf(" %d", node.i_uid);
 	printf(" %d", node.i_size);
-	// Print date
+	printf(" %s", mtime(&node.st_mtime));
 	printf(" %s\n",dirent->name);
 
 }
