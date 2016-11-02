@@ -1,36 +1,121 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "showzone.h"
 #include "main.h"
 #include "command.h"
 #include "traverse.h"
 
+void printDirent(struct minix_dir_entry *dirent)
+{
+		printf("\t%s\n", dirent->name);
+}
 
-
-void traverse(char* flag){
-
-	int FIRST_DATA_BYTE = (1024 * 5/*super.s_firstdatazone*/);
-	lseek(fd, FIRST_DATA_BYTE, SEEK_SET);
-	read(fd, &inode, 32);
+void intToPermission(short bytes, char *output)
+{
+	/* Char should be of the form:
+	 * 		0000 0000 0000 0???
+	 *
+	 */
+	if (bytes > 7)
+	{
+	 output[0] = '?';
+	 output[1] = '?';
+	 output[2] = '?';
+	 return;
+	}
 	
-	if ((lseek(fd, SEEK_SET, SEEK_SET)) != 0) {
-        printf("There was a problem setting pointer to beginning of imagefile\n");
-        exit(1);
-		
-		if (strcmp("-l", flag) == 0) {
-        printf(" ***********************************************************\n");
-        printf(" ** FILE TYPE NOTATION **\n");
-        printf(" ** **\n");
-        printf(" ** drwx------ : DIRECTORY ONLY ACCESSIBLE BY OWNER **\n");
-        printf(" ** -rw-r--r-- : FILE ONLY ACCESSIBLE BY GROUP PERMISSIONS **\n");
-        printf(" ** drwxr-xr-x : DIRECTORY WITH OPEN ACCESS **\n");
-        printf(" **-rwxr-xr-x : FILE ANY USER CAN READ OR EXECUTE **\n");
-        printf(" ***********************************************************\n\n");
-    }
-    }
-	
-	printf("\nmode: %o \nUID: %d \ni_size: %d \ntime: %d \nGID: %u \nNLINKS: %u \nZONE: %d\n", inode.i_mode, inode.i_uid, inode.i_size, inode.i_time, inode.i_gid, inode.i_nlinks, inode.i_zone[1]);
+	short firstBitMask  = 0x0004;
+	short firstBit = firstBitMask & bytes;	
+	short secondBitMask = 0x0002;
+	short secondBit = secondBitMask & bytes;
+	short thirdBitMask  = 0x0001;
+	short thirdBit = thirdBitMask & bytes;
+
+	 output[0] = firstBit  ? 'r' : '-';
+	 output[1] = secondBit ? 'w' : '-';
+	 output[2] = thirdBit  ? 'x' : '-';
+}
+
+void printAdvDirent(struct minix_dir_entry *dirent)
+{
+	struct minix_inode node = getInode(dirent->inode);
+
+	short MASK_file   = 0x8000;
+	short MASK_first  = 0x01C0;
+	short MASK_middle = 0x0038;
+	short MASK_last   = 0x0007;
+	char otherPerm[10];
+	otherPerm[9] = 0;
+	intToPermission((MASK_first & node.i_mode) >> 6, &otherPerm[0]);
+	intToPermission((MASK_middle & node.i_mode) >> 3, &otherPerm[3]);
+	intToPermission((MASK_last & node.i_mode), &otherPerm[6]);
+
+
+	printf("%c", (MASK_file & node.i_mode) ? '-' : 'd');
+	printf("%s", (char *)&otherPerm);
+	printf(" %d", node.i_uid);
+	printf(" %d", node.i_size);
+	// Print date
+	printf(" %s\n",dirent->name);
+
+}
+
+/**
+ * Return:
+ *	True if fileName != ""
+ */
+bool printTraverse(int start, bool withList)
+{
+	lseek(fd,start,SEEK_SET);
+	char buf[32];
+	int out = read(fd, buf, 32);
+	struct minix_dir_entry *dirent = (struct minix_dir_entry *) &buf;
+
+	if (strcmp("",dirent->name))
+	{
+		if (withList)
+		{
+			printAdvDirent(dirent);
+		}
+		else
+		{
+			printDirent(dirent);
+		}
+	}
+
+	if (DEBUG)
+	{
+		if (dirent->name == NULL)
+		{
+			printf("NULL == dirent->:'%s'\n",dirent->name);
+		}
+		else
+		{
+			printf("NULL != dirent->:'%s'\n",dirent->name);
+		}
+	}
+	return !strcmp("",dirent->name);
+}
+
+void traverse(int numberArgs, char *args[])
+{
+	if (!isMounted)
+	{
+		printf("No image mounted.\n");
+		return;
+	}
+
+	bool withList = strcmp("-l",args[1]) == 0;
+
+	// Start at hardcoded root.
+	int start = BLOCK_SIZE * super.s_firstdatazone;
+	bool end = false;
+	for (int i=0; (i<BLOCK_SIZE) && !end; i+=32)
+	{
+		end = printTraverse(start + i, withList);
+	}
 }
 	
