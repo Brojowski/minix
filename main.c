@@ -262,7 +262,7 @@ void showsuper(){
 }
 // Unmounts specified image file
 
-void miniumount(int numArgs,char *args[]){
+void miniumount(){
 	
 	// Check to see if file is mounted	
 	if(isMounted == 0){
@@ -270,34 +270,13 @@ void miniumount(int numArgs,char *args[]){
 		return;	
 	}
 	
-	char *imagefile;
 	
-	if (numArgs > 1){
-        	imagefile = args[1];
-    	}
-	
-	else{
-        	return;
-	}
-	
-	//Ran into problems here. it seems fd is flagged
-	//for some reason and it wont let you unmount.
-	//without this piece of code it works fine, but
-	//would like to fix later for an extra check	
-	
-	// Check for valid file	
-	/*fd = open(imagefile, O_RDONLY);
-	
-	if(fd == -1){
-		printf("\nInvalid Input, file wasn't unmounted\n");
-		return;	
-	}*/
 	
 	
 	//clear variables for superblock struct
 	isMounted = 0;	
 	super = (struct minix_super_block){0};
-	printf("\nUnmounted: %s\n", imagefile);
+	printf("\nUnmounted\n");
 	close(fd);
 }
 int main()
