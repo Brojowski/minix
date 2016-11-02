@@ -212,12 +212,14 @@ void minimount(int numArgs,char *args[]){
 	char *imagefile;
 	
 	// Check for argument	
-	if (numArgs > 1){
-        	imagefile = args[1];
-    	}
-	
-	else{
-        	return;
+	if (numArgs > 1)
+    {
+       	imagefile = args[1];
+    }
+	else
+    {
+        printf("usage: minimount <imagefile>\n");
+       	return;
 	}
 	
 	// Check for valid file	
