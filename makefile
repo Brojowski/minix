@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I.
-DEPS = main.h showzone.h command.h traverse.h
-OBJ = main.o  showzone.o traverse.o
+DEPS = main.h showzone.h command.h traverse.h showfile.h
+OBJ = main.o  showzone.o traverse.o showfile.o
 
 %.o: %.c $(DEPS)
 	$(CC) -g -c -o $@ $< $(CFLAGS)

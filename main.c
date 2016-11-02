@@ -8,7 +8,7 @@
 
 #include "main.h"
 #include "showzone.h"
-
+#include "showfile.h"
 #include "command.h"
 #include "traverse.h"
 
@@ -74,6 +74,16 @@ void createCommand(char *name, commandFunction method)
         last->next = new_cmd;
         last = last->next;
     }
+}
+
+struct minix_inode getInode(unsigned short inode)
+{
+	short firstInodeBlock = 2 + super.s_imap_blocks + super.s_zmap_blocks;
+	lseek(fd, firstInodeBlock * BLOCK_SIZE, SEEK_SET);
+	lseek(fd, (inode-1) * 32, SEEK_CUR);
+	struct minix_inode node;
+	read(fd, &node, sizeof(struct minix_inode));
+	return node;
 }
 
 // Use a standard way rather than write one because standards are good.
@@ -299,7 +309,13 @@ int main()
     createCommand("showzone", &showzone);
     createCommand("showsuper",&showsuper);
     createCommand("traverse", &traverse);
+    createCommand("showfile", &showfile);
     createCommand("--debug", &toggleDebug);
+
+    char **mnt;
+    mnt[1] = "imagefile.img";
+    minimount(2,mnt);
+
     do
     {
         prompt();

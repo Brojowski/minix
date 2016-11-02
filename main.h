@@ -31,4 +31,6 @@ bool stop;
 
 bool DEBUG;
 
+struct minix_inode getInode(unsigned short inode);
+
 #endif
